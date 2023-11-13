@@ -1,5 +1,8 @@
 {
   "dependencies": {
+    "axios": "^1.6.1",
+    "dotenv": "^16.3.1",
+    "form-data": "^4.0.0",
     "node-libcamera": "^1.0.6",
     "onoff": "^6.0.3",
     "raspicam": "^0.2.14"

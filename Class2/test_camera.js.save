@@ -1,0 +1,21 @@
+const request = require("request");
+const libcamera = require("node-libcamera");
+
+//Start to snap a photo...
+libcamera.still({
+	output: 'img/test_2.jpg',
+	timeout: 2000,
+	width: 640,
+	height: 480
+})
+	.then((result) => {
+		console.log("success");
+
+		// upload photo to Line Notify
+		request("", (error, response, body) => {
+		
+		});
+	})
+	.catch((error) => {
+		console.log(error);
+	})

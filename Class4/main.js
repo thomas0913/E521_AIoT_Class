@@ -1,7 +1,10 @@
 require('dotenv').config();
+const axios = require("axios");
 const webdriver = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
+let FormData = require("form-data");
 
+const token = process.env.LINE_TOKEN;
 const fb_username = process.env.FB_USERNAME;
 const fb_passward = process.env.FB_PASSWORD;
 const By = webdriver.By;
@@ -9,8 +12,40 @@ const until = webdriver.until;
 const options = new chrome.Options();
 const hyperlink = "https://www.facebook.com/login";
 const fan_page = "https://www.facebook.com/MangoJump";
+let fb_trace = null;
 
 options.setUserPreferences({ 'profile.default_content_setting_values.notifications': 1 });
+
+const noti = (text) => {
+    let form_data = new FormData();
+    form_data.append("message",  text);
+    //form_data.append("imageFile", fs.createReadStream('img/test_2.jpg'));
+
+    let headers = Object.assign({
+            'Authorization': `Bearer ${token}` //Write in your Line Notify Token when you got
+    }, form_data.getHeaders());
+
+    // upload photo to Line Notify by Line API
+    axios({
+            method: 'post',
+            url: "https://notify-api.line.me/api/notify",
+            data: form_data,
+            headers: headers
+    })
+            .then((response) => {
+                    console.log("HTTP StateCode:" + response.status);
+                    console.log(response.data);
+            })
+            .catch((error) => {
+                    console.error("Failed to send a line notification");
+                    if (error.response) {
+                            console.error("HTTP StatusCode:" + error.response.status);
+                            console.error(error.response.data);
+                    } else {
+                            console.error(error);
+                    }
+            });
+};
 
 const loginFacebook = async () => {
     let driver;
@@ -43,7 +78,6 @@ const loginFacebook = async () => {
 
     await driver.sleep(3000);
 
-    let fb_trace = null;
     let is_accurate = true;
 
     const fb_trace_eles = await driver.wait(until.elementsLocated(By.xpath(`//*[contains(@class,"x193iq5w")]`)));
@@ -60,7 +94,8 @@ const loginFacebook = async () => {
             break;
         }
     }
-    console.log("追蹤人數 : ", fb_trace);
+    //console.log("追蹤人數 : ", fb_trace);
+    noti("\n芒果醬FB粉專\n追蹤人數 : " + fb_trace);
     driver.quit();
 }
 
